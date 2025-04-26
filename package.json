@@ -16,13 +16,19 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^5.1.0",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.1.5",
     "express-session": "^1.18.1",
+    "helmet": "^7.2.0",
+    "hpp": "^0.2.3",
+    "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.0",
     "multer": "^1.4.5-lts.2",
     "nodemailer": "^6.10.1",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "xss-clean": "^0.1.1"
   },
   "devDependencies": {
     "eslint": "^8.56.0",

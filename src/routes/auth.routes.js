@@ -2,11 +2,16 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/auth.controller");
 const { authenticate } = require("../middleware");
+const {
+  validateRegister,
+  validateLogin,
+  validateVerifyEmail,
+} = require("../validators/auth.validator");
 
 // Auth routes
-router.post("/register", authController.register);
-router.post("/verify-email", authenticate, authController.verifyEmail);
-router.post("/login", authController.login);
+router.post("/register", validateRegister, authController.register);
+router.post("/verify-email", authenticate, validateVerifyEmail, authController.verifyEmail);
+router.post("/login", validateLogin, authController.login);
 router.post("/logout", authenticate, authController.logout);
 
 // Google OAuth routes
