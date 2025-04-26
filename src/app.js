@@ -9,6 +9,8 @@ const passport = require("./config/passport");
 // Import routes
 const userRoutes = require("./routes/user.routes");
 const authRoutes = require("./routes/auth.routes");
+const chatRoutes = require("./routes/chat.routes");
+const messageRoutes = require("./routes/message.routes");
 
 // Initialize express app
 const app = express();
@@ -57,6 +59,8 @@ mongoose
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/chats", chatRoutes);
+app.use("/api/messages", messageRoutes);
 
 // Health check route
 app.get("/health", (req, res) => {
