@@ -2,10 +2,12 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/user.model");
 
+// Lưu thông tin user vào session
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
+// Lấy thông tin user từ session
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
@@ -15,6 +17,7 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
+// Cấu hình chiến lược xác thực Google
 passport.use(
   new GoogleStrategy(
     {
@@ -24,22 +27,22 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Check if user already exists
+        // Kiểm tra user đã tồn tại chưa
         let user = await User.findOne({ googleId: profile.id });
 
         if (!user) {
-          // Create new user if doesn't exist
+          // Tạo user mới nếu chưa tồn tại
           user = await User.create({
             googleId: profile.id,
             email: profile.emails[0].value,
             username: profile.emails[0].value.split("@")[0],
             fullName: profile.displayName,
             avatar: profile.photos[0].value,
-            isVerified: true, // Google accounts are already verified
+            isVerified: true, // Tài khoản Google đã được xác thực
           });
         }
 
-        // Update user's last active time
+        // Cập nhật thời gian hoạt động cuối cùng
         user.lastActive = new Date();
         await user.save();
 
