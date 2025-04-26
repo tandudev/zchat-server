@@ -1,3 +1,4 @@
+require("dotenv").config();
 const User = require("../models/user.model");
 const nodemailer = require("nodemailer");
 const cloudinary = require("cloudinary").v2;

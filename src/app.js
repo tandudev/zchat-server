@@ -1,10 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const passport = require("./config/passport");
-require("dotenv").config();
 
 // Import routes
 const userRoutes = require("./routes/user.routes");
