@@ -8,6 +8,7 @@ const passport = require("./config/passport");
 
 // Import routes
 const userRoutes = require("./routes/user.routes");
+const authRoutes = require("./routes/auth.routes");
 
 // Initialize express app
 const app = express();
@@ -55,6 +56,7 @@ mongoose
 
 // Routes
 app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
 
 // Health check route
 app.get("/health", (req, res) => {
