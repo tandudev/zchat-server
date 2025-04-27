@@ -1,7 +1,7 @@
-require("dotenv").config();
-const userService = require("../services/user.service");
-const { generateToken } = require("../utils/jwt.utils");
-const passport = require("../config/passport");
+require('dotenv').config();
+const userService = require('../services/user.service');
+const { generateToken } = require('../utils/jwt.utils');
+const passport = require('../config/passport');
 
 class AuthController {
   // Đăng ký tài khoản mới
@@ -12,7 +12,7 @@ class AuthController {
       // Kiểm tra email đã tồn tại chưa
       const existingUser = await userService.findUserByEmail(email);
       if (existingUser) {
-        return res.status(400).json({ message: "Email đã được đăng ký" });
+        return res.status(400).json({ message: 'Email đã được đăng ký' });
       }
 
       // Tạo user mới
@@ -29,22 +29,23 @@ class AuthController {
       await userService.updateUser(user._id, { refreshToken });
 
       // Lưu tokens vào cookie
-      res.cookie("accessToken", accessToken, {
+      res.cookie('accessToken', accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 60 * 60 * 1000, // 1 giờ
       });
 
-      res.cookie("refreshToken", refreshToken, {
+      res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
       });
 
       res.status(201).json({
-        message: "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.",
+        message:
+          'Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.',
         user: {
           id: user._id,
           email: user.email,
@@ -54,7 +55,7 @@ class AuthController {
         },
       });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 
@@ -65,18 +66,20 @@ class AuthController {
       const user = await userService.findUserById(req.user.id);
 
       if (!user) {
-        return res.status(404).json({ message: "Không tìm thấy người dùng" });
+        return res.status(404).json({ message: 'Không tìm thấy người dùng' });
       }
 
       const isVerified = user.verifyCode(code);
       if (!isVerified) {
-        return res.status(400).json({ message: "Mã xác thực không hợp lệ hoặc đã hết hạn" });
+        return res
+          .status(400)
+          .json({ message: 'Mã xác thực không hợp lệ hoặc đã hết hạn' });
       }
 
       await user.save();
-      res.json({ message: "Xác thực email thành công" });
+      res.json({ message: 'Xác thực email thành công' });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 
@@ -87,12 +90,12 @@ class AuthController {
       const user = await userService.findUserByEmail(email);
 
       if (!user) {
-        return res.status(404).json({ message: "Email không tồn tại" });
+        return res.status(404).json({ message: 'Email không tồn tại' });
       }
 
       const isPasswordValid = await user.comparePassword(password);
       if (!isPasswordValid) {
-        return res.status(401).json({ message: "Mật khẩu không chính xác" });
+        return res.status(401).json({ message: 'Mật khẩu không chính xác' });
       }
 
       const accessToken = generateToken(user._id);
@@ -104,17 +107,17 @@ class AuthController {
       });
 
       // Lưu tokens vào cookie
-      res.cookie("accessToken", accessToken, {
+      res.cookie('accessToken', accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 60 * 60 * 1000, // 1 giờ
       });
 
-      res.cookie("refreshToken", refreshToken, {
+      res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
       });
 
@@ -129,7 +132,7 @@ class AuthController {
         },
       });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 
@@ -137,66 +140,16 @@ class AuthController {
   async logout(req, res) {
     try {
       // Xóa cookies
-      res.clearCookie("accessToken");
-      res.clearCookie("refreshToken");
+      res.clearCookie('accessToken');
+      res.clearCookie('refreshToken');
 
       // Xóa refresh token trong database
       await userService.updateUser(req.user.id, { refreshToken: null });
 
-      res.json({ message: "Đăng xuất thành công" });
+      res.json({ message: 'Đăng xuất thành công' });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
-  }
-
-  // Google OAuth methods
-  async googleAuth(req, res, next) {
-    passport.authenticate("google", {
-      scope: ["profile", "email"],
-    })(req, res, next);
-  }
-
-  async googleAuthCallback(req, res, next) {
-    passport.authenticate("google", async (err, user) => {
-      if (err) {
-        return res.redirect(
-          `${process.env.CLIENT_URL}/login?error=${encodeURIComponent(err.message)}`
-        );
-      }
-
-      if (!user) {
-        return res.redirect(`${process.env.CLIENT_URL}/login?error=Xác thực thất bại`);
-      }
-
-      try {
-        // Tạo tokens
-        const accessToken = generateToken(user._id);
-        const refreshToken = generateToken(user._id, true);
-
-        // Cập nhật refresh token
-        await userService.updateUser(user._id, { refreshToken });
-
-        // Lưu tokens vào cookie
-        res.cookie("accessToken", accessToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 60 * 60 * 1000, // 1 giờ
-        });
-
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
-        });
-
-        // Chuyển hướng về client
-        res.redirect(`${process.env.CLIENT_URL}/login?success=true`);
-      } catch (error) {
-        res.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent(error.message)}`);
-      }
-    })(req, res, next);
   }
 }
 
