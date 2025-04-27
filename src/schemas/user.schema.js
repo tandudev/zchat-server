@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
@@ -33,13 +33,13 @@ const userSchema = new mongoose.Schema(
     },
     bio: {
       type: String,
-      default: '',
+      default: "",
       maxLength: 150,
     },
     gender: {
       type: String,
-      enum: ['male', 'female', 'other'],
-      default: 'other',
+      enum: ["male", "female", "other"],
+      default: "other",
     },
     dateOfBirth: {
       type: Date,
@@ -72,26 +72,32 @@ const userSchema = new mongoose.Schema(
       },
       privacy: {
         type: String,
-        enum: ['public', 'friends', 'private'],
-        default: 'friends',
+        enum: ["public", "friends", "private"],
+        default: "friends",
       },
     },
     friends: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: "User",
       },
     ],
-    friendRequests: [
+    sentFriendRequests: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: "User",
+      },
+    ],
+    receivedFriendRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
     blockedUsers: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: "User",
       },
     ],
     refreshToken: {
@@ -101,7 +107,7 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // Indexes
