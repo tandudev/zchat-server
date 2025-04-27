@@ -1,15 +1,15 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema(
   {
     chat: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Chat",
+      ref: 'Chat',
       required: true,
     },
     sender: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     content: {
@@ -18,8 +18,8 @@ const messageSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["text", "image", "file", "voice", "video", "sticker", "system"],
-      default: "text",
+      enum: ['text', 'image', 'file', 'voice', 'video', 'sticker', 'system'],
+      default: 'text',
     },
     attachments: [
       {
@@ -37,24 +37,24 @@ const messageSchema = new mongoose.Schema(
     },
     replyTo: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Message",
+      ref: 'Message',
     },
     mentions: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
     readBy: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
     deletedBy: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
     isEdited: {
@@ -67,7 +67,7 @@ const messageSchema = new mongoose.Schema(
     },
     forwardedFrom: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Chat",
+      ref: 'Chat',
     },
     metadata: {
       type: Map,
@@ -77,7 +77,7 @@ const messageSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Indexes

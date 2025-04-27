@@ -1,7 +1,7 @@
-require("dotenv").config();
-const User = require("../models/user.model");
-const nodemailer = require("nodemailer");
-const cloudinary = require("cloudinary").v2;
+require('dotenv').config();
+const User = require('../models/user.model');
+const nodemailer = require('nodemailer');
+const cloudinary = require('cloudinary').v2;
 
 // Configure Cloudinary
 cloudinary.config({
@@ -12,7 +12,7 @@ cloudinary.config({
 
 // Configure email transporter
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_SERVICE,
     pass: process.env.PASSWORD_SERVICE,
@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
 
 class UserService {
   async createUser(userData) {
-    const username = userData.email.split("@")[0];
+    const username = userData.email.split('@')[0];
     const user = new User({
       ...userData,
       username,
@@ -53,7 +53,7 @@ class UserService {
     const mailOptions = {
       from: process.env.EMAIL_SERVICE,
       to: user.email,
-      subject: "Verify your ZChat account",
+      subject: 'Verify your ZChat account',
       html: `
                 <h1>Welcome to ZChat!</h1>
                 <p>Your verification code is: <strong>${verificationCode}</strong></p>
@@ -67,8 +67,8 @@ class UserService {
 
   async uploadAvatar(userId, file) {
     const result = await cloudinary.uploader.upload(file.path, {
-      folder: "zchat/avatars",
-      resource_type: "auto",
+      folder: 'zchat/avatars',
+      resource_type: 'auto',
     });
 
     const user = await this.updateUser(userId, { avatar: result.secure_url });
@@ -77,11 +77,13 @@ class UserService {
 
   async uploadCoverPhoto(userId, file) {
     const result = await cloudinary.uploader.upload(file.path, {
-      folder: "zchat/cover-photos",
-      resource_type: "auto",
+      folder: 'zchat/cover-photos',
+      resource_type: 'auto',
     });
 
-    const user = await this.updateUser(userId, { coverPhoto: result.secure_url });
+    const user = await this.updateUser(userId, {
+      coverPhoto: result.secure_url,
+    });
     return user;
   }
 
@@ -93,10 +95,10 @@ class UserService {
       user.friends.push(friendId);
       friend.friends.push(userId);
       user.friendRequests = user.friendRequests.filter(
-        (id) => id.toString() !== friendId.toString()
+        id => id.toString() !== friendId.toString(),
       );
       friend.friendRequests = friend.friendRequests.filter(
-        (id) => id.toString() !== userId.toString()
+        id => id.toString() !== userId.toString(),
       );
     }
 
@@ -118,9 +120,11 @@ class UserService {
     const user = await User.findById(userId);
     if (!user.blockedUsers.includes(blockedUserId)) {
       user.blockedUsers.push(blockedUserId);
-      user.friends = user.friends.filter((id) => id.toString() !== blockedUserId.toString());
+      user.friends = user.friends.filter(
+        id => id.toString() !== blockedUserId.toString(),
+      );
       user.friendRequests = user.friendRequests.filter(
-        (id) => id.toString() !== blockedUserId.toString()
+        id => id.toString() !== blockedUserId.toString(),
       );
       await user.save();
     }
@@ -130,12 +134,12 @@ class UserService {
   async searchUsers(query) {
     return User.find({
       $or: [
-        { username: { $regex: query, $options: "i" } },
-        { fullName: { $regex: query, $options: "i" } },
-        { email: { $regex: query, $options: "i" } },
+        { username: { $regex: query, $options: 'i' } },
+        { fullName: { $regex: query, $options: 'i' } },
+        { email: { $regex: query, $options: 'i' } },
       ],
       isActive: true,
-    }).select("-password -refreshToken");
+    }).select('-password -refreshToken');
   }
 }
 

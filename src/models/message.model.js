@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const messageSchema = require("../schemas/message.schema");
+const mongoose = require('mongoose');
+const messageSchema = require('../schemas/message.schema');
 
 // Methods
 messageSchema.methods.addReaction = async function (userId, reaction) {
@@ -19,7 +19,7 @@ messageSchema.methods.removeReaction = async function (userId, reaction) {
     const users = this.reactions.get(reaction);
     this.reactions.set(
       reaction,
-      users.filter((id) => id.toString() !== userId.toString())
+      users.filter(id => id.toString() !== userId.toString()),
     );
     await this.save();
   }
@@ -45,6 +45,6 @@ messageSchema.methods.edit = async function (newContent) {
   await this.save();
 };
 
-const Message = mongoose.model("Message", messageSchema);
+const Message = mongoose.model('Message', messageSchema);
 
 module.exports = Message;

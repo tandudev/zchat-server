@@ -1,4 +1,4 @@
-const messageService = require("../services/message.service");
+const messageService = require('../services/message.service');
 
 class MessageController {
   // Gửi tin nhắn
@@ -21,7 +21,7 @@ class MessageController {
       const { messageId } = req.params;
       const message = await messageService.getMessageById(messageId);
       if (!message) {
-        return res.status(404).json({ message: "Message not found" });
+        return res.status(404).json({ message: 'Message not found' });
       }
       res.json(message);
     } catch (error) {
@@ -34,7 +34,11 @@ class MessageController {
     try {
       const { chatId } = req.params;
       const { page = 1, limit = 20 } = req.query;
-      const messages = await messageService.getChatMessages(chatId, page, limit);
+      const messages = await messageService.getChatMessages(
+        chatId,
+        page,
+        limit,
+      );
       res.json(messages);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -48,7 +52,7 @@ class MessageController {
       const { content } = req.body;
       const message = await messageService.editMessage(messageId, content);
       if (!message) {
-        return res.status(404).json({ message: "Message not found" });
+        return res.status(404).json({ message: 'Message not found' });
       }
       res.json(message);
     } catch (error) {
@@ -60,11 +64,14 @@ class MessageController {
   async deleteMessage(req, res) {
     try {
       const { messageId } = req.params;
-      const message = await messageService.deleteMessage(messageId, req.user.id);
+      const message = await messageService.deleteMessage(
+        messageId,
+        req.user.id,
+      );
       if (!message) {
-        return res.status(404).json({ message: "Message not found" });
+        return res.status(404).json({ message: 'Message not found' });
       }
-      res.json({ message: "Message deleted successfully" });
+      res.json({ message: 'Message deleted successfully' });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -75,9 +82,13 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const { reaction } = req.body;
-      const message = await messageService.addReaction(messageId, req.user.id, reaction);
+      const message = await messageService.addReaction(
+        messageId,
+        req.user.id,
+        reaction,
+      );
       if (!message) {
-        return res.status(404).json({ message: "Message not found" });
+        return res.status(404).json({ message: 'Message not found' });
       }
       res.json(message);
     } catch (error) {
@@ -90,9 +101,13 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const { reaction } = req.body;
-      const message = await messageService.removeReaction(messageId, req.user.id, reaction);
+      const message = await messageService.removeReaction(
+        messageId,
+        req.user.id,
+        reaction,
+      );
       if (!message) {
-        return res.status(404).json({ message: "Message not found" });
+        return res.status(404).json({ message: 'Message not found' });
       }
       res.json(message);
     } catch (error) {
@@ -106,7 +121,7 @@ class MessageController {
       const { messageId } = req.params;
       const message = await messageService.markAsRead(messageId, req.user.id);
       if (!message) {
-        return res.status(404).json({ message: "Message not found" });
+        return res.status(404).json({ message: 'Message not found' });
       }
       res.json(message);
     } catch (error) {
@@ -119,9 +134,13 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const { targetChatId } = req.body;
-      const message = await messageService.forwardMessage(messageId, req.user.id, targetChatId);
+      const message = await messageService.forwardMessage(
+        messageId,
+        req.user.id,
+        targetChatId,
+      );
       if (!message) {
-        return res.status(404).json({ message: "Message not found" });
+        return res.status(404).json({ message: 'Message not found' });
       }
       res.json(message);
     } catch (error) {
@@ -145,7 +164,10 @@ class MessageController {
   async getUnreadMessages(req, res) {
     try {
       const { chatId } = req.params;
-      const messages = await messageService.getUnreadMessages(chatId, req.user.id);
+      const messages = await messageService.getUnreadMessages(
+        chatId,
+        req.user.id,
+      );
       res.json(messages);
     } catch (error) {
       res.status(500).json({ message: error.message });

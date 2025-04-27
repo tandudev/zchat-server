@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const chatSchema = require("../schemas/chat.schema");
+const mongoose = require('mongoose');
+const chatSchema = require('../schemas/chat.schema');
 
 // Methods
 chatSchema.methods.addMember = async function (userId) {
@@ -10,8 +10,12 @@ chatSchema.methods.addMember = async function (userId) {
 };
 
 chatSchema.methods.removeMember = async function (userId) {
-  this.members = this.members.filter((memberId) => memberId.toString() !== userId.toString());
-  this.admins = this.admins.filter((adminId) => adminId.toString() !== userId.toString());
+  this.members = this.members.filter(
+    memberId => memberId.toString() !== userId.toString(),
+  );
+  this.admins = this.admins.filter(
+    adminId => adminId.toString() !== userId.toString(),
+  );
   await this.save();
 };
 
@@ -23,7 +27,9 @@ chatSchema.methods.addAdmin = async function (userId) {
 };
 
 chatSchema.methods.removeAdmin = async function (userId) {
-  this.admins = this.admins.filter((adminId) => adminId.toString() !== userId.toString());
+  this.admins = this.admins.filter(
+    adminId => adminId.toString() !== userId.toString(),
+  );
   await this.save();
 };
 
@@ -38,6 +44,6 @@ chatSchema.methods.resetUnreadCount = async function (userId) {
   await this.save();
 };
 
-const Chat = mongoose.model("Chat", chatSchema);
+const Chat = mongoose.model('Chat', chatSchema);
 
 module.exports = Chat;

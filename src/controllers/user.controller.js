@@ -1,6 +1,6 @@
-require("dotenv").config();
-const userService = require("../services/user.service");
-const User = require("../models/user.model");
+require('dotenv').config();
+const userService = require('../services/user.service');
+const User = require('../models/user.model');
 
 class UserController {
   // Lấy thông tin profile
@@ -8,7 +8,7 @@ class UserController {
     try {
       const user = await userService.findUserById(req.user.id);
       if (!user) {
-        return res.status(404).json({ message: "Không tìm thấy người dùng" });
+        return res.status(404).json({ message: 'Không tìm thấy người dùng' });
       }
 
       res.json({
@@ -27,7 +27,7 @@ class UserController {
         friendRequests: user.friendRequests,
       });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 
@@ -44,7 +44,7 @@ class UserController {
       });
 
       res.json({
-        message: "Cập nhật thông tin thành công",
+        message: 'Cập nhật thông tin thành công',
         user: {
           id: user._id,
           fullName: user.fullName,
@@ -55,7 +55,7 @@ class UserController {
         },
       });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 
@@ -63,16 +63,16 @@ class UserController {
   async uploadAvatar(req, res) {
     try {
       if (!req.file) {
-        return res.status(400).json({ message: "Không có file được tải lên" });
+        return res.status(400).json({ message: 'Không có file được tải lên' });
       }
 
       const user = await userService.uploadAvatar(req.user.id, req.file);
       res.json({
-        message: "Tải lên avatar thành công",
+        message: 'Tải lên avatar thành công',
         avatar: user.avatar,
       });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 
@@ -80,16 +80,16 @@ class UserController {
   async uploadCoverPhoto(req, res) {
     try {
       if (!req.file) {
-        return res.status(400).json({ message: "Không có file được tải lên" });
+        return res.status(400).json({ message: 'Không có file được tải lên' });
       }
 
       const user = await userService.uploadCoverPhoto(req.user.id, req.file);
       res.json({
-        message: "Tải lên ảnh bìa thành công",
+        message: 'Tải lên ảnh bìa thành công',
         coverPhoto: user.coverPhoto,
       });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 
@@ -98,13 +98,15 @@ class UserController {
     try {
       const { query } = req.query;
       if (!query) {
-        return res.status(400).json({ message: "Vui lòng nhập từ khóa tìm kiếm" });
+        return res
+          .status(400)
+          .json({ message: 'Vui lòng nhập từ khóa tìm kiếm' });
       }
 
       const users = await userService.searchUsers(query);
       res.json(users);
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 
@@ -115,7 +117,7 @@ class UserController {
       const friend = await userService.sendFriendRequest(req.user.id, friendId);
 
       res.json({
-        message: "Gửi lời mời kết bạn thành công",
+        message: 'Gửi lời mời kết bạn thành công',
         friend: {
           id: friend._id,
           username: friend.username,
@@ -124,7 +126,7 @@ class UserController {
         },
       });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 
@@ -135,14 +137,14 @@ class UserController {
       const user = await userService.addFriend(req.user.id, friendId);
 
       res.json({
-        message: "Chấp nhận lời mời kết bạn thành công",
+        message: 'Chấp nhận lời mời kết bạn thành công',
         user: {
           id: user._id,
           friends: user.friends,
         },
       });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 
@@ -153,14 +155,14 @@ class UserController {
       const user = await userService.blockUser(req.user.id, userId);
 
       res.json({
-        message: "Chặn người dùng thành công",
+        message: 'Chặn người dùng thành công',
         user: {
           id: user._id,
           blockedUsers: user.blockedUsers,
         },
       });
     } catch (error) {
-      res.status(500).json({ message: "Có lỗi xảy ra: " + error.message });
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
     }
   }
 }

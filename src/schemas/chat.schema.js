@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const chatSchema = new mongoose.Schema(
   {
@@ -12,23 +12,23 @@ const chatSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: "",
+      default: '',
     },
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
     admins: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
     lastMessage: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Message",
+      ref: 'Message',
     },
     unreadCount: {
       type: Map,
@@ -47,7 +47,7 @@ const chatSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Indexes

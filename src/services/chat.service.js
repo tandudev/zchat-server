@@ -1,6 +1,6 @@
-const Chat = require("../models/chat.model");
-const Message = require("../models/message.model");
-const User = require("../models/user.model");
+const Chat = require('../models/chat.model');
+const Message = require('../models/message.model');
+const User = require('../models/user.model');
 
 class ChatService {
   // Tạo cuộc trò chuyện mới
@@ -52,25 +52,25 @@ class ChatService {
   // Lấy thông tin chat
   async getChatById(chatId) {
     return Chat.findById(chatId)
-      .populate("members", "username fullName avatar")
-      .populate("admins", "username fullName avatar")
-      .populate("lastMessage");
+      .populate('members', 'username fullName avatar')
+      .populate('admins', 'username fullName avatar')
+      .populate('lastMessage');
   }
 
   // Lấy danh sách chat của người dùng
   async getUserChats(userId) {
     return Chat.find({ members: userId, isActive: true })
-      .populate("members", "username fullName avatar")
-      .populate("admins", "username fullName avatar")
-      .populate("lastMessage")
+      .populate('members', 'username fullName avatar')
+      .populate('admins', 'username fullName avatar')
+      .populate('lastMessage')
       .sort({ updatedAt: -1 });
   }
 
   // Cập nhật thông tin chat
   async updateChat(chatId, updateData) {
     return Chat.findByIdAndUpdate(chatId, updateData, { new: true })
-      .populate("members", "username fullName avatar")
-      .populate("admins", "username fullName avatar");
+      .populate('members', 'username fullName avatar')
+      .populate('admins', 'username fullName avatar');
   }
 
   // Xóa chat (chỉ đánh dấu không hoạt động)
@@ -82,10 +82,10 @@ class ChatService {
   async addMember(chatId, userId) {
     const chat = await Chat.findById(chatId);
     if (!chat) {
-      throw new Error("Chat not found");
+      throw new Error('Chat not found');
     }
     if (!chat.isGroup) {
-      throw new Error("Cannot add members to private chat");
+      throw new Error('Cannot add members to private chat');
     }
     await chat.addMember(userId);
     return chat;
@@ -95,10 +95,10 @@ class ChatService {
   async removeMember(chatId, userId) {
     const chat = await Chat.findById(chatId);
     if (!chat) {
-      throw new Error("Chat not found");
+      throw new Error('Chat not found');
     }
     if (!chat.isGroup) {
-      throw new Error("Cannot remove members from private chat");
+      throw new Error('Cannot remove members from private chat');
     }
     await chat.removeMember(userId);
     return chat;
@@ -108,10 +108,10 @@ class ChatService {
   async addAdmin(chatId, userId) {
     const chat = await Chat.findById(chatId);
     if (!chat) {
-      throw new Error("Chat not found");
+      throw new Error('Chat not found');
     }
     if (!chat.isGroup) {
-      throw new Error("Cannot add admins to private chat");
+      throw new Error('Cannot add admins to private chat');
     }
     await chat.addAdmin(userId);
     return chat;
@@ -121,10 +121,10 @@ class ChatService {
   async removeAdmin(chatId, userId) {
     const chat = await Chat.findById(chatId);
     if (!chat) {
-      throw new Error("Chat not found");
+      throw new Error('Chat not found');
     }
     if (!chat.isGroup) {
-      throw new Error("Cannot remove admins from private chat");
+      throw new Error('Cannot remove admins from private chat');
     }
     await chat.removeAdmin(userId);
     return chat;
@@ -149,7 +149,7 @@ class ChatService {
   async incrementUnreadCount(chatId, userId) {
     const chat = await Chat.findById(chatId);
     if (!chat) {
-      throw new Error("Chat not found");
+      throw new Error('Chat not found');
     }
     await chat.incrementUnreadCount(userId);
     return chat;
@@ -159,7 +159,7 @@ class ChatService {
   async resetUnreadCount(chatId, userId) {
     const chat = await Chat.findById(chatId);
     if (!chat) {
-      throw new Error("Chat not found");
+      throw new Error('Chat not found');
     }
     await chat.resetUnreadCount(userId);
     return chat;
@@ -171,13 +171,13 @@ class ChatService {
       members: userId,
       isActive: true,
       $or: [
-        { name: { $regex: query, $options: "i" } },
-        { "members.username": { $regex: query, $options: "i" } },
+        { name: { $regex: query, $options: 'i' } },
+        { 'members.username': { $regex: query, $options: 'i' } },
       ],
     })
-      .populate("members", "username fullName avatar")
-      .populate("admins", "username fullName avatar")
-      .populate("lastMessage");
+      .populate('members', 'username fullName avatar')
+      .populate('admins', 'username fullName avatar')
+      .populate('lastMessage');
   }
 }
 

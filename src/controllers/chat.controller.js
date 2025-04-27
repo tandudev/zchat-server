@@ -1,5 +1,5 @@
-const chatService = require("../services/chat.service");
-const messageService = require("../services/message.service");
+const chatService = require('../services/chat.service');
+const messageService = require('../services/message.service');
 
 class ChatController {
   // Tạo cuộc trò chuyện 1-1
@@ -17,7 +17,11 @@ class ChatController {
   async createGroupChat(req, res) {
     try {
       const { name, members } = req.body;
-      const chat = await chatService.createGroupChat(req.user.id, name, members);
+      const chat = await chatService.createGroupChat(
+        req.user.id,
+        name,
+        members,
+      );
       res.status(201).json(chat);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -30,7 +34,7 @@ class ChatController {
       const { chatId } = req.params;
       const chat = await chatService.getChatById(chatId);
       if (!chat) {
-        return res.status(404).json({ message: "Chat not found" });
+        return res.status(404).json({ message: 'Chat not found' });
       }
       res.json(chat);
     } catch (error) {
@@ -55,7 +59,7 @@ class ChatController {
       const updateData = req.body;
       const chat = await chatService.updateChat(chatId, updateData);
       if (!chat) {
-        return res.status(404).json({ message: "Chat not found" });
+        return res.status(404).json({ message: 'Chat not found' });
       }
       res.json(chat);
     } catch (error) {
@@ -69,9 +73,9 @@ class ChatController {
       const { chatId } = req.params;
       const chat = await chatService.deleteChat(chatId);
       if (!chat) {
-        return res.status(404).json({ message: "Chat not found" });
+        return res.status(404).json({ message: 'Chat not found' });
       }
-      res.json({ message: "Chat deleted successfully" });
+      res.json({ message: 'Chat deleted successfully' });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

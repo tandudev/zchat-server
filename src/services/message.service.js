@@ -1,6 +1,6 @@
-const Message = require("../models/message.model");
-const Chat = require("../models/chat.model");
-const User = require("../models/user.model");
+const Message = require('../models/message.model');
+const Chat = require('../models/chat.model');
+const User = require('../models/user.model');
 
 class MessageService {
   // Gửi tin nhắn mới
@@ -15,7 +15,7 @@ class MessageService {
 
     // Tăng unreadCount cho các thành viên khác
     const chat = await Chat.findById(messageData.chat);
-    chat.members.forEach((memberId) => {
+    chat.members.forEach(memberId => {
       if (memberId.toString() !== messageData.sender.toString()) {
         chat.incrementUnreadCount(memberId);
       }
@@ -27,10 +27,10 @@ class MessageService {
   // Lấy tin nhắn theo ID
   async getMessageById(messageId) {
     return Message.findById(messageId)
-      .populate("sender", "username fullName avatar")
-      .populate("chat")
-      .populate("replyTo")
-      .populate("mentions", "username fullName avatar");
+      .populate('sender', 'username fullName avatar')
+      .populate('chat')
+      .populate('replyTo')
+      .populate('mentions', 'username fullName avatar');
   }
 
   // Lấy tin nhắn trong chat
@@ -40,16 +40,16 @@ class MessageService {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("sender", "username fullName avatar")
-      .populate("replyTo")
-      .populate("mentions", "username fullName avatar");
+      .populate('sender', 'username fullName avatar')
+      .populate('replyTo')
+      .populate('mentions', 'username fullName avatar');
   }
 
   // Chỉnh sửa tin nhắn
   async editMessage(messageId, content) {
     const message = await Message.findById(messageId);
     if (!message) {
-      throw new Error("Message not found");
+      throw new Error('Message not found');
     }
     await message.edit(content);
     return message;
@@ -59,7 +59,7 @@ class MessageService {
   async deleteMessage(messageId, userId) {
     const message = await Message.findById(messageId);
     if (!message) {
-      throw new Error("Message not found");
+      throw new Error('Message not found');
     }
     await message.deleteForUser(userId);
     return message;
@@ -69,7 +69,7 @@ class MessageService {
   async addReaction(messageId, userId, reaction) {
     const message = await Message.findById(messageId);
     if (!message) {
-      throw new Error("Message not found");
+      throw new Error('Message not found');
     }
     await message.addReaction(userId, reaction);
     return message;
@@ -79,7 +79,7 @@ class MessageService {
   async removeReaction(messageId, userId, reaction) {
     const message = await Message.findById(messageId);
     if (!message) {
-      throw new Error("Message not found");
+      throw new Error('Message not found');
     }
     await message.removeReaction(userId, reaction);
     return message;
@@ -89,7 +89,7 @@ class MessageService {
   async markAsRead(messageId, userId) {
     const message = await Message.findById(messageId);
     if (!message) {
-      throw new Error("Message not found");
+      throw new Error('Message not found');
     }
     await message.markAsRead(userId);
     return message;
@@ -99,7 +99,7 @@ class MessageService {
   async forwardMessage(messageId, senderId, targetChatId) {
     const originalMessage = await Message.findById(messageId);
     if (!originalMessage) {
-      throw new Error("Message not found");
+      throw new Error('Message not found');
     }
 
     const forwardedMessage = new Message({
@@ -127,13 +127,13 @@ class MessageService {
     return Message.find({
       chat: chatId,
       $or: [
-        { content: { $regex: query, $options: "i" } },
-        { "attachments.name": { $regex: query, $options: "i" } },
+        { content: { $regex: query, $options: 'i' } },
+        { 'attachments.name': { $regex: query, $options: 'i' } },
       ],
     })
-      .populate("sender", "username fullName avatar")
-      .populate("replyTo")
-      .populate("mentions", "username fullName avatar");
+      .populate('sender', 'username fullName avatar')
+      .populate('replyTo')
+      .populate('mentions', 'username fullName avatar');
   }
 
   // Lấy tin nhắn chưa đọc
@@ -143,17 +143,17 @@ class MessageService {
       readBy: { $ne: userId },
       sender: { $ne: userId },
     })
-      .populate("sender", "username fullName avatar")
-      .populate("replyTo")
-      .populate("mentions", "username fullName avatar");
+      .populate('sender', 'username fullName avatar')
+      .populate('replyTo')
+      .populate('mentions', 'username fullName avatar');
   }
 
   // Lấy tin nhắn theo loại
   async getMessagesByType(chatId, type) {
     return Message.find({ chat: chatId, type })
-      .populate("sender", "username fullName avatar")
-      .populate("replyTo")
-      .populate("mentions", "username fullName avatar");
+      .populate('sender', 'username fullName avatar')
+      .populate('replyTo')
+      .populate('mentions', 'username fullName avatar');
   }
 }
 
