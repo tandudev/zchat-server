@@ -1,7 +1,6 @@
 require('dotenv').config();
 const userService = require('../services/user.service');
 const { generateToken } = require('../utils/jwt.utils');
-const passport = require('../config/passport');
 
 class AuthController {
   // Đăng ký tài khoản mới

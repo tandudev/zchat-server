@@ -8,7 +8,6 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
-const passport = require('./config/passport');
 const errorHandler = require('./middleware/errorHandler');
 
 // Import routes
@@ -60,10 +59,6 @@ app.use(
     },
   }),
 );
-
-// Initialize passport
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Database connection
 mongoose
