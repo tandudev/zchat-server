@@ -16,6 +16,11 @@ router.post(
   validateVerifyEmail,
   authController.verifyEmail,
 );
+router.post(
+  '/resend-verification-email',
+  authenticate,
+  authController.resendVerificationEmail,
+);
 router.post('/login', validateLogin, authController.login);
 router.post('/logout', authenticate, authController.logout);
 

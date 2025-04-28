@@ -82,6 +82,27 @@ class AuthController {
     }
   }
 
+  // Gửi lại email xác thực
+  async resendVerificationEmail(req, res) {
+    try {
+      const user = await userService.findUserById(req.user.id);
+
+      if (!user) {
+        return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+      }
+
+      if (user.isVerified) {
+        return res.status(400).json({ message: 'Tài khoản đã được xác thực' });
+      }
+
+      // Gửi lại email xác thực
+      await userService.sendVerificationEmail(user);
+      res.json({ message: 'Đã gửi lại email xác thực' });
+    } catch (error) {
+      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+    }
+  }
+
   // Đăng nhập
   async login(req, res) {
     try {
