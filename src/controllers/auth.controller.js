@@ -118,6 +118,13 @@ class AuthController {
         return res.status(401).json({ message: 'Mật khẩu không chính xác' });
       }
 
+      if (!user.isVerified) {
+        return res.status(403).json({
+          message:
+            'Tài khoản chưa được xác thực. Vui lòng kiểm tra email để xác thực tài khoản.',
+        });
+      }
+
       const accessToken = generateToken(user._id);
       const refreshToken = generateToken(user._id, true);
 
