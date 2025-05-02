@@ -5,7 +5,10 @@ const User = require('../models/user.model');
 // Middleware xác thực người dùng
 const authenticate = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token =
+      req.cookies.accessToken ||
+      req.cookies.refreshToken ||
+      req.headers['authorization'].replace('Bearer ', '');
 
     // Kiểm tra xem token có tồn tại không
     if (!token) {

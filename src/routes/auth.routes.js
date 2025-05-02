@@ -45,4 +45,12 @@ router.post('/login', validateLogin, authController.login);
 // Đăng xuất và vô hiệu hóa token
 router.post('/logout', authenticate, authController.logout);
 
+router.get('/check-login', authenticate, (req, res) => {
+  // Nếu middleware authenticate đã qua, nghĩa là người dùng đã đăng nhập
+  return res.status(200).json({
+    message: 'User is logged in',
+    user: req.user, // Trả về thông tin người dùng
+  });
+});
+
 module.exports = router;
