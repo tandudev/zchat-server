@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      maxlength: 30, // Thêm giới hạn
     },
     password: {
       type: String,
@@ -22,6 +23,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      maxlength: 50, // Thêm giới hạn
     },
     avatar: {
       type: String,
@@ -33,13 +35,13 @@ const userSchema = new mongoose.Schema(
     },
     bio: {
       type: String,
-      default: "",
+      default: '',
       maxLength: 150,
     },
     gender: {
       type: String,
-      enum: ["male", "female", "other"],
-      default: "other",
+      enum: ['male', 'female', 'other'],
+      default: 'other',
     },
     dateOfBirth: {
       type: Date,
@@ -56,6 +58,7 @@ const userSchema = new mongoose.Schema(
     verificationCodeExpires: {
       type: Date,
       default: null,
+      index: { expireAfterSeconds: 0 }, // TTL index để tự động xóa sau khi hết hạn
     },
     isActive: {
       type: Boolean,
@@ -72,46 +75,59 @@ const userSchema = new mongoose.Schema(
       },
       privacy: {
         type: String,
-        enum: ["public", "friends", "private"],
-        default: "friends",
+        enum: ['public', 'friends', 'private'],
+        default: 'friends',
       },
     },
     friends: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
     sentFriendRequests: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
     receivedFriendRequests: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
     blockedUsers: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
     refreshToken: {
       type: String,
       default: null,
+      set: function (value) {
+        // Có thể hash refresh token trước khi lưu vào DB
+        return value ? bcrypt.hashSync(value, 10) : null;
+      },
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-// Indexes
 userSchema.index({ username: 1 });
 userSchema.index({ isActive: 1 });
+
+// toJSON để ẩn các trường nhạy cảm
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password;
+  delete user.verificationCode;
+  delete user.verificationCodeExpires;
+  delete user.refreshToken;
+  return user;
+};
 
 module.exports = userSchema;

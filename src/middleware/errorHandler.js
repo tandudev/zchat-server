@@ -1,5 +1,8 @@
 const errorHandler = (err, req, res, next) => {
-  console.error(err.stack);
+  // In lỗi ra console (chỉ trong môi trường phát triển)
+  if (process.env.NODE_ENV === 'development') {
+    console.error(err.stack);
+  }
 
   // Mongoose validation error
   if (err.name === 'ValidationError') {
@@ -42,8 +45,19 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Default error
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error',
+  const statusCode = err.status || 500;
+  const errorMessage = err.message || 'Internal Server Error';
+
+  // In môi trường phát triển, cung cấp thêm stack trace (có thể tắt trong sản xuất)
+  if (process.env.NODE_ENV === 'development') {
+    return res.status(statusCode).json({
+      error: errorMessage,
+      stack: err.stack,
+    });
+  }
+
+  return res.status(statusCode).json({
+    error: errorMessage,
   });
 };
 

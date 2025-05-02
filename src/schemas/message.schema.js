@@ -15,6 +15,9 @@ const messageSchema = new mongoose.Schema(
     content: {
       type: String,
       trim: true,
+      required: function () {
+        return this.type !== 'file' && this.type !== 'sticker';
+      },
     },
     type: {
       type: String,
@@ -27,12 +30,12 @@ const messageSchema = new mongoose.Schema(
         type: String,
         name: String,
         size: Number,
-        duration: Number, // for voice/video messages
+        duration: Number,
       },
     ],
     reactions: {
       type: Map,
-      of: [mongoose.Schema.Types.ObjectId], // userIds who reacted
+      of: [mongoose.Schema.Types.ObjectId],
       default: {},
     },
     replyTo: {
@@ -80,7 +83,6 @@ const messageSchema = new mongoose.Schema(
   },
 );
 
-// Indexes
 messageSchema.index({ chat: 1, createdAt: -1 });
 messageSchema.index({ sender: 1 });
 messageSchema.index({ type: 1 });

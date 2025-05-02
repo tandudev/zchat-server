@@ -8,10 +8,16 @@ class MessageController {
         ...req.body,
         sender: req.user.id,
       };
+
+      if (!messageData.content) {
+        return res.status(400).json({ message: 'Content is required' });
+      }
+
       const message = await messageService.sendMessage(messageData);
       res.status(201).json(message);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error); // Log error details for debugging
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -21,11 +27,12 @@ class MessageController {
       const { messageId } = req.params;
       const message = await messageService.getMessageById(messageId);
       if (!message) {
-        return res.status(404).json({ message: 'Message not found' });
+        return res.status(404).json({ message: 'Tin nhắn không tìm thấy' });
       }
       res.json(message);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -33,15 +40,19 @@ class MessageController {
   async getChatMessages(req, res) {
     try {
       const { chatId } = req.params;
-      const { page = 1, limit = 20 } = req.query;
+      const { page = 1, limit = 20, unread = false } = req.query;
+
+      // Nếu cần, bạn có thể thêm lọc theo trạng thái đã đọc/unread
       const messages = await messageService.getChatMessages(
         chatId,
         page,
         limit,
+        unread,
       );
       res.json(messages);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -50,13 +61,23 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const { content } = req.body;
-      const message = await messageService.editMessage(messageId, content);
+
+      if (!content) {
+        return res.status(400).json({ message: 'Content is required' });
+      }
+
+      const message = await messageService.editMessage(
+        messageId,
+        content,
+        req.user.id,
+      );
       if (!message) {
-        return res.status(404).json({ message: 'Message not found' });
+        return res.status(404).json({ message: 'Tin nhắn không tìm thấy' });
       }
       res.json(message);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -69,11 +90,12 @@ class MessageController {
         req.user.id,
       );
       if (!message) {
-        return res.status(404).json({ message: 'Message not found' });
+        return res.status(404).json({ message: 'Tin nhắn không tìm thấy' });
       }
-      res.json({ message: 'Message deleted successfully' });
+      res.json({ message: 'Tin nhắn đã được xóa' });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -82,17 +104,19 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const { reaction } = req.body;
+
       const message = await messageService.addReaction(
         messageId,
         req.user.id,
         reaction,
       );
       if (!message) {
-        return res.status(404).json({ message: 'Message not found' });
+        return res.status(404).json({ message: 'Tin nhắn không tìm thấy' });
       }
       res.json(message);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -101,17 +125,19 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const { reaction } = req.body;
+
       const message = await messageService.removeReaction(
         messageId,
         req.user.id,
         reaction,
       );
       if (!message) {
-        return res.status(404).json({ message: 'Message not found' });
+        return res.status(404).json({ message: 'Tin nhắn không tìm thấy' });
       }
       res.json(message);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -121,11 +147,12 @@ class MessageController {
       const { messageId } = req.params;
       const message = await messageService.markAsRead(messageId, req.user.id);
       if (!message) {
-        return res.status(404).json({ message: 'Message not found' });
+        return res.status(404).json({ message: 'Tin nhắn không tìm thấy' });
       }
       res.json(message);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -134,17 +161,22 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const { targetChatId } = req.body;
+      if (!targetChatId) {
+        return res.status(400).json({ message: 'Target chat ID is required' });
+      }
+
       const message = await messageService.forwardMessage(
         messageId,
         req.user.id,
         targetChatId,
       );
       if (!message) {
-        return res.status(404).json({ message: 'Message not found' });
+        return res.status(404).json({ message: 'Tin nhắn không tìm thấy' });
       }
       res.json(message);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -153,10 +185,14 @@ class MessageController {
     try {
       const { chatId } = req.params;
       const { query } = req.query;
+      if (!query) {
+        return res.status(400).json({ message: 'Search query is required' });
+      }
       const messages = await messageService.searchMessages(chatId, query);
       res.json(messages);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -170,7 +206,8 @@ class MessageController {
       );
       res.json(messages);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -182,7 +219,8 @@ class MessageController {
       const messages = await messageService.getMessagesByType(chatId, type);
       res.json(messages);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 }

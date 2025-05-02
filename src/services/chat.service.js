@@ -1,5 +1,4 @@
 const Chat = require('../models/chat.model');
-const Message = require('../models/message.model');
 const User = require('../models/user.model');
 
 class ChatService {
@@ -51,10 +50,15 @@ class ChatService {
 
   // Lấy thông tin chat
   async getChatById(chatId) {
-    return Chat.findById(chatId)
+    const chat = await Chat.findById(chatId)
       .populate('members', 'username fullName avatar')
       .populate('admins', 'username fullName avatar')
       .populate('lastMessage');
+
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+    return chat;
   }
 
   // Lấy danh sách chat của người dùng
@@ -68,14 +72,30 @@ class ChatService {
 
   // Cập nhật thông tin chat
   async updateChat(chatId, updateData) {
-    return Chat.findByIdAndUpdate(chatId, updateData, { new: true })
+    const chat = await Chat.findByIdAndUpdate(chatId, updateData, { new: true })
       .populate('members', 'username fullName avatar')
       .populate('admins', 'username fullName avatar');
+
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+
+    return chat;
   }
 
   // Xóa chat (chỉ đánh dấu không hoạt động)
   async deleteChat(chatId) {
-    return Chat.findByIdAndUpdate(chatId, { isActive: false }, { new: true });
+    const chat = await Chat.findByIdAndUpdate(
+      chatId,
+      { isActive: false },
+      { new: true },
+    );
+
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+
+    return chat;
   }
 
   // Thêm thành viên vào nhóm
@@ -87,7 +107,12 @@ class ChatService {
     if (!chat.isGroup) {
       throw new Error('Cannot add members to private chat');
     }
-    await chat.addMember(userId);
+
+    if (!chat.members.includes(userId)) {
+      chat.members.push(userId);
+      await chat.save();
+    }
+
     return chat;
   }
 
@@ -100,7 +125,12 @@ class ChatService {
     if (!chat.isGroup) {
       throw new Error('Cannot remove members from private chat');
     }
-    await chat.removeMember(userId);
+
+    chat.members = chat.members.filter(
+      member => member.toString() !== userId.toString(),
+    );
+    await chat.save();
+
     return chat;
   }
 
@@ -113,7 +143,12 @@ class ChatService {
     if (!chat.isGroup) {
       throw new Error('Cannot add admins to private chat');
     }
-    await chat.addAdmin(userId);
+
+    if (!chat.admins.includes(userId)) {
+      chat.admins.push(userId);
+      await chat.save();
+    }
+
     return chat;
   }
 
@@ -126,23 +161,48 @@ class ChatService {
     if (!chat.isGroup) {
       throw new Error('Cannot remove admins from private chat');
     }
-    await chat.removeAdmin(userId);
+
+    chat.admins = chat.admins.filter(
+      admin => admin.toString() !== userId.toString(),
+    );
+    await chat.save();
+
     return chat;
   }
 
   // Cập nhật ảnh đại diện nhóm
   async updateAvatar(chatId, avatarUrl) {
-    return Chat.findByIdAndUpdate(chatId, { avatar: avatarUrl }, { new: true });
+    const chat = await Chat.findByIdAndUpdate(
+      chatId,
+      { avatar: avatarUrl },
+      { new: true },
+    );
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+    return chat;
   }
 
   // Cập nhật tên nhóm
   async updateName(chatId, name) {
-    return Chat.findByIdAndUpdate(chatId, { name }, { new: true });
+    const chat = await Chat.findByIdAndUpdate(chatId, { name }, { new: true });
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+    return chat;
   }
 
   // Cập nhật cài đặt chat
   async updateSettings(chatId, settings) {
-    return Chat.findByIdAndUpdate(chatId, { settings }, { new: true });
+    const chat = await Chat.findByIdAndUpdate(
+      chatId,
+      { settings },
+      { new: true },
+    );
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+    return chat;
   }
 
   // Tăng số tin nhắn chưa đọc

@@ -1,6 +1,5 @@
 const Message = require('../models/message.model');
 const Chat = require('../models/chat.model');
-const User = require('../models/user.model');
 
 class MessageService {
   // Gửi tin nhắn mới
@@ -9,15 +8,17 @@ class MessageService {
     await message.save();
 
     // Cập nhật lastMessage cho chat
-    await Chat.findByIdAndUpdate(messageData.chat, {
-      lastMessage: message._id,
-    });
+    const chat = await Chat.findById(messageData.chat);
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+    chat.lastMessage = message._id;
+    await chat.save();
 
     // Tăng unreadCount cho các thành viên khác
-    const chat = await Chat.findById(messageData.chat);
-    chat.members.forEach(memberId => {
+    chat.members.forEach(async memberId => {
       if (memberId.toString() !== messageData.sender.toString()) {
-        chat.incrementUnreadCount(memberId);
+        await chat.incrementUnreadCount(memberId);
       }
     });
 
@@ -26,11 +27,15 @@ class MessageService {
 
   // Lấy tin nhắn theo ID
   async getMessageById(messageId) {
-    return Message.findById(messageId)
+    const message = await Message.findById(messageId)
       .populate('sender', 'username fullName avatar')
       .populate('chat')
       .populate('replyTo')
       .populate('mentions', 'username fullName avatar');
+    if (!message) {
+      throw new Error('Message not found');
+    }
+    return message;
   }
 
   // Lấy tin nhắn trong chat
@@ -71,7 +76,7 @@ class MessageService {
     if (!message) {
       throw new Error('Message not found');
     }
-    await message.addReaction(userId, reaction);
+    await message.addReaction(userId, reaction); // Đảm bảo gọi phương thức đúng
     return message;
   }
 
@@ -81,7 +86,7 @@ class MessageService {
     if (!message) {
       throw new Error('Message not found');
     }
-    await message.removeReaction(userId, reaction);
+    await message.removeReaction(userId, reaction); // Đảm bảo gọi phương thức đúng
     return message;
   }
 
@@ -115,9 +120,12 @@ class MessageService {
     await forwardedMessage.save();
 
     // Cập nhật lastMessage cho chat đích
-    await Chat.findByIdAndUpdate(targetChatId, {
-      lastMessage: forwardedMessage._id,
-    });
+    const targetChat = await Chat.findById(targetChatId);
+    if (!targetChat) {
+      throw new Error('Target chat not found');
+    }
+    targetChat.lastMessage = forwardedMessage._id;
+    await targetChat.save();
 
     return forwardedMessage;
   }

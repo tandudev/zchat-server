@@ -54,7 +54,8 @@ class AuthController {
         },
       });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error); // Log error details for debugging
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -78,7 +79,8 @@ class AuthController {
       await user.save();
       res.json({ message: 'Xác thực email thành công' });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -99,7 +101,8 @@ class AuthController {
       await userService.sendVerificationEmail(user);
       res.json({ message: 'Đã gửi lại email xác thực' });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -107,6 +110,13 @@ class AuthController {
   async login(req, res) {
     try {
       const { email, password } = req.body;
+
+      // Kiểm tra tính hợp lệ của email (sử dụng regex)
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Email không hợp lệ' });
+      }
+
       const user = await userService.findUserByEmail(email);
 
       if (!user) {
@@ -159,7 +169,8 @@ class AuthController {
         },
       });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -175,7 +186,8 @@ class AuthController {
 
       res.json({ message: 'Đăng xuất thành công' });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 }

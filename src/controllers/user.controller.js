@@ -1,6 +1,5 @@
 require('dotenv').config();
 const userService = require('../services/user.service');
-const User = require('../models/user.model');
 
 class UserController {
   // Lấy thông tin profile
@@ -27,7 +26,8 @@ class UserController {
         friendRequests: user.friendRequests,
       });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error); // Log error details
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -55,7 +55,8 @@ class UserController {
         },
       });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -66,13 +67,20 @@ class UserController {
         return res.status(400).json({ message: 'Không có file được tải lên' });
       }
 
+      // Check file type for avatar (example)
+      const allowedTypes = ['image/jpeg', 'image/png'];
+      if (!allowedTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({ message: 'Chỉ cho phép tải lên ảnh' });
+      }
+
       const user = await userService.uploadAvatar(req.user.id, req.file);
       res.json({
         message: 'Tải lên avatar thành công',
         avatar: user.avatar,
       });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -83,13 +91,20 @@ class UserController {
         return res.status(400).json({ message: 'Không có file được tải lên' });
       }
 
+      // Check file type for cover photo (example)
+      const allowedTypes = ['image/jpeg', 'image/png'];
+      if (!allowedTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({ message: 'Chỉ cho phép tải lên ảnh' });
+      }
+
       const user = await userService.uploadCoverPhoto(req.user.id, req.file);
       res.json({
         message: 'Tải lên ảnh bìa thành công',
         coverPhoto: user.coverPhoto,
       });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -106,7 +121,8 @@ class UserController {
       const users = await userService.searchUsers(query);
       res.json(users);
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -114,8 +130,23 @@ class UserController {
   async sendFriendRequest(req, res) {
     try {
       const { friendId } = req.params;
-      const friend = await userService.sendFriendRequest(req.user.id, friendId);
 
+      // Validate friendId
+      if (!friendId) {
+        return res.status(400).json({ message: 'ID người bạn không hợp lệ' });
+      }
+
+      const existingRequest = await userService.checkExistingFriendRequest(
+        req.user.id,
+        friendId,
+      );
+      if (existingRequest) {
+        return res
+          .status(400)
+          .json({ message: 'Đã gửi lời mời kết bạn hoặc đã là bạn' });
+      }
+
+      const friend = await userService.sendFriendRequest(req.user.id, friendId);
       res.json({
         message: 'Gửi lời mời kết bạn thành công',
         friend: {
@@ -126,7 +157,8 @@ class UserController {
         },
       });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -134,6 +166,7 @@ class UserController {
   async acceptFriendRequest(req, res) {
     try {
       const { friendId } = req.params;
+
       const user = await userService.addFriend(req.user.id, friendId);
 
       res.json({
@@ -144,7 +177,8 @@ class UserController {
         },
       });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 
@@ -162,7 +196,8 @@ class UserController {
         },
       });
     } catch (error) {
-      res.status(500).json({ message: 'Có lỗi xảy ra: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra, vui lòng thử lại sau' });
     }
   }
 }

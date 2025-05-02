@@ -6,10 +6,17 @@ class ChatController {
   async createPrivateChat(req, res) {
     try {
       const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+
       const chat = await chatService.createPrivateChat(req.user.id, userId);
       res.status(201).json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error); // Log lỗi chi tiết
+      res
+        .status(500)
+        .json({ message: 'Có lỗi xảy ra khi tạo cuộc trò chuyện' });
     }
   }
 
@@ -17,6 +24,12 @@ class ChatController {
   async createGroupChat(req, res) {
     try {
       const { name, members } = req.body;
+      if (!name || !members || members.length === 0) {
+        return res
+          .status(400)
+          .json({ message: 'Name and members are required' });
+      }
+
       const chat = await chatService.createGroupChat(
         req.user.id,
         name,
@@ -24,7 +37,8 @@ class ChatController {
       );
       res.status(201).json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi tạo nhóm chat' });
     }
   }
 
@@ -34,11 +48,12 @@ class ChatController {
       const { chatId } = req.params;
       const chat = await chatService.getChatById(chatId);
       if (!chat) {
-        return res.status(404).json({ message: 'Chat not found' });
+        return res.status(404).json({ message: 'Chat không tìm thấy' });
       }
       res.json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi lấy thông tin chat' });
     }
   }
 
@@ -48,7 +63,8 @@ class ChatController {
       const chats = await chatService.getUserChats(req.user.id);
       res.json(chats);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi lấy danh sách chat' });
     }
   }
 
@@ -59,11 +75,12 @@ class ChatController {
       const updateData = req.body;
       const chat = await chatService.updateChat(chatId, updateData);
       if (!chat) {
-        return res.status(404).json({ message: 'Chat not found' });
+        return res.status(404).json({ message: 'Chat không tìm thấy' });
       }
       res.json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi cập nhật chat' });
     }
   }
 
@@ -73,11 +90,12 @@ class ChatController {
       const { chatId } = req.params;
       const chat = await chatService.deleteChat(chatId);
       if (!chat) {
-        return res.status(404).json({ message: 'Chat not found' });
+        return res.status(404).json({ message: 'Chat không tìm thấy' });
       }
-      res.json({ message: 'Chat deleted successfully' });
+      res.json({ message: 'Chat đã được xóa' });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi xóa chat' });
     }
   }
 
@@ -86,10 +104,15 @@ class ChatController {
     try {
       const { chatId } = req.params;
       const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+
       const chat = await chatService.addMember(chatId, userId);
       res.json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi thêm thành viên' });
     }
   }
 
@@ -100,7 +123,8 @@ class ChatController {
       const chat = await chatService.removeMember(chatId, userId);
       res.json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi xóa thành viên' });
     }
   }
 
@@ -112,7 +136,8 @@ class ChatController {
       const chat = await chatService.addAdmin(chatId, userId);
       res.json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi thêm quản trị viên' });
     }
   }
 
@@ -123,7 +148,8 @@ class ChatController {
       const chat = await chatService.removeAdmin(chatId, userId);
       res.json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi xóa quản trị viên' });
     }
   }
 
@@ -135,7 +161,10 @@ class ChatController {
       const chat = await chatService.updateAvatar(chatId, avatar);
       res.json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: 'Có lỗi xảy ra khi cập nhật ảnh đại diện' });
     }
   }
 
@@ -147,7 +176,8 @@ class ChatController {
       const chat = await chatService.updateName(chatId, name);
       res.json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi cập nhật tên nhóm' });
     }
   }
 
@@ -159,7 +189,10 @@ class ChatController {
       const chat = await chatService.updateSettings(chatId, settings);
       res.json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: 'Có lỗi xảy ra khi cập nhật cài đặt chat' });
     }
   }
 
@@ -170,7 +203,10 @@ class ChatController {
       const chat = await chatService.resetUnreadCount(chatId, req.user.id);
       res.json(chat);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: 'Có lỗi xảy ra khi đặt lại số tin nhắn chưa đọc' });
     }
   }
 
@@ -178,10 +214,14 @@ class ChatController {
   async searchChats(req, res) {
     try {
       const { query } = req.query;
+      if (!query) {
+        return res.status(400).json({ message: 'Search query is required' });
+      }
       const chats = await chatService.searchChats(req.user.id, query);
       res.json(chats);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Có lỗi xảy ra khi tìm kiếm chat' });
     }
   }
 }

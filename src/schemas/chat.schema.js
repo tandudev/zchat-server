@@ -5,6 +5,7 @@ const chatSchema = new mongoose.Schema(
     name: {
       type: String,
       trim: true,
+      maxlength: 100,
     },
     isGroup: {
       type: Boolean,
@@ -39,10 +40,24 @@ const chatSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    isArchived: {
+      type: Boolean,
+      default: false,
+    },
     settings: {
-      type: Map,
-      of: mongoose.Schema.Types.Mixed,
-      default: {},
+      notifications: {
+        type: Boolean,
+        default: true,
+      },
+      privacy: {
+        type: String,
+        enum: ['public', 'private', 'friendsOnly'],
+        default: 'private',
+      },
+    },
+    lastActive: {
+      type: Date,
+      default: Date.now,
     },
   },
   {
@@ -50,9 +65,9 @@ const chatSchema = new mongoose.Schema(
   },
 );
 
-// Indexes
 chatSchema.index({ members: 1 });
 chatSchema.index({ lastMessage: 1 });
 chatSchema.index({ isGroup: 1 });
+chatSchema.index({ isActive: 1 });
 
 module.exports = chatSchema;
